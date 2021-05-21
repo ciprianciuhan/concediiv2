@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+/Users/ciprian/Desktop/proiect_java/.metadata/.plugins/org.eclipse.jdt.core
+1175494123.index
+461120886.index
+2016498483.index
