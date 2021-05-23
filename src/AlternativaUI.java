@@ -38,6 +38,8 @@ public class AlternativaUI {
 	private JTextField txtDataIncepere;
 	private JTextField txtDataFinalizare;
 	private JTextField txtIdAngajatRequest;
+	private JTextField txtIdAngajatCautare;
+	private JTextField txtZiCautare;
 	private JTable table;
 
 	/**
@@ -156,6 +158,7 @@ public class AlternativaUI {
 			e.printStackTrace();
 		}
 	}
+
 	
 	//metoda de update pentru angajati
 	
@@ -196,7 +199,36 @@ public class AlternativaUI {
 			e.printStackTrace();
 		}
 	}
-	
+
+	//cautarea unui concediu dupa o zi si id-ul unui angajat
+	public void cautare_zi_angajat_table_load(Date zi_concediu,int id_angajat){
+		try{
+			pst = con.prepareStatement("select * from concedii where data_incepere <= ? and data_finalizare >= ? and id_angajat = ?");
+			pst.setDate(1,zi_concediu);
+			pst.setDate(2,zi_concediu);
+			pst.setInt(3,id_angajat);
+			rs = pst.executeQuery();
+			table.setModel(DbUtils.resultSetToTableModel(rs));
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	public void cautare_concediu_dupa_id_angajat_table_load(int id_angajat){
+		try{
+			pst = con.prepareStatement("select * from concedii where id_angajat = ?");
+
+			pst.setInt(1,id_angajat);
+
+			rs = pst.executeQuery();
+
+			table.setModel(DbUtils.resultSetToTableModel(rs));
+
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
+
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -218,6 +250,7 @@ public class AlternativaUI {
 		panel.setBounds(10, 68, 382, 296);
 		frame.getContentPane().add(panel);
 		panel.setLayout(null);
+
 		
 		JLabel lblNewLabel_1 = new JLabel("Nume");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 12));
@@ -385,7 +418,6 @@ public class AlternativaUI {
 					try {
 						update_concediu_table_load(data_incepere, data_finalizare, id_concediu);
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					
@@ -461,14 +493,29 @@ public class AlternativaUI {
 		JButton btnCautareConcediuDupaZiSiAngajat = new JButton("Cauta concediu dupa zi & angajat");
 		btnCautareConcediuDupaZiSiAngajat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String id_angajat = JOptionPane.showInputDialog("Introduceti id-ul angajatului");
+				String zi_concediu = JOptionPane.showInputDialog("Introduceti ziua de concediu");
+
+				int id_angajat2 = Integer.parseInt(id_angajat);
+				Date zi_concediu2 = Date.valueOf(zi_concediu);
+
+
+				cautare_zi_angajat_table_load(zi_concediu2,id_angajat2);
 			}
 		});
+
 		btnCautareConcediuDupaZiSiAngajat.setBounds(130, 412, 140, 23);
 		frame.getContentPane().add(btnCautareConcediuDupaZiSiAngajat);
 		
 		JButton btnCautareConcediuDupaIdAngajat = new JButton("Cauta concediu dupa ID angajat");
 		btnCautareConcediuDupaIdAngajat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				String id_angajat = JOptionPane.showInputDialog("Introduceti id-ul angajatului");
+
+				int id_angajat2 = Integer.parseInt(id_angajat);
+
+				cautare_concediu_dupa_id_angajat_table_load(id_angajat2);
 			}
 		});
 		btnCautareConcediuDupaIdAngajat.setBounds(135, 447, 140, 23);
@@ -516,6 +563,8 @@ public class AlternativaUI {
 				
 			}
 		});
+
+
 		
 	}
 }
