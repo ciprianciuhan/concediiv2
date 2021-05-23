@@ -458,21 +458,21 @@ public class AlternativaUI {
 		btnInsertConcediu.setBounds(135, 376, 135, 29);
 		frame.getContentPane().add(btnInsertConcediu);
 		
-		JButton btnCautareConcediuDupaZi = new JButton("Cauta concediu dupa zi");
-		btnCautareConcediuDupaZi.addActionListener(new ActionListener() {
+		JButton btnCautareConcediuDupaZiSiAngajat = new JButton("Cauta concediu dupa zi & angajat");
+		btnCautareConcediuDupaZiSiAngajat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnCautareConcediuDupaZi.setBounds(130, 412, 140, 23);
-		frame.getContentPane().add(btnCautareConcediuDupaZi);
+		btnCautareConcediuDupaZiSiAngajat.setBounds(130, 412, 140, 23);
+		frame.getContentPane().add(btnCautareConcediuDupaZiSiAngajat);
 		
-		JButton btnCautareConcediuDupaNumeAngajat = new JButton("Cauta concediu dupa nume angajat");
-		btnCautareConcediuDupaNumeAngajat.addActionListener(new ActionListener() {
+		JButton btnCautareConcediuDupaIdAngajat = new JButton("Cauta concediu dupa ID angajat");
+		btnCautareConcediuDupaIdAngajat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnCautareConcediuDupaNumeAngajat.setBounds(135, 447, 135, 23);
-		frame.getContentPane().add(btnCautareConcediuDupaNumeAngajat);
+		btnCautareConcediuDupaIdAngajat.setBounds(135, 447, 140, 23);
+		frame.getContentPane().add(btnCautareConcediuDupaIdAngajat);
 
 		btnInsertConcediu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
