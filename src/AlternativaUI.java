@@ -100,13 +100,7 @@ public class AlternativaUI {
 	public void update_concediu_table_load(Date data_inceput, Date data_sfarsit, int id_concediu) throws ParseException {
 		try {
 
-			pst = con.prepareStatement("update concedii set data_incepere = ?, data_finalizare = ? where id_concediu = ?");
-
-			
-			
-			
-			
-			
+			pst = con.prepareStatement("update concedii set data_incepere = ?, data_finalizare = ? where id_concediu = ?");			
 			pst.setDate(1,  data_inceput);
 			pst.setDate(2,  data_sfarsit);
 			pst.setInt(3, id_concediu);
@@ -442,11 +436,11 @@ public class AlternativaUI {
 		frame.getContentPane().add(deleteButton);
 		
 		JButton btnCautaCnp = new JButton("Cauta dupa CNP");
-		btnCautaCnp.setBounds(10, 412, 129, 23);
+		btnCautaCnp.setBounds(10, 412, 110, 23);
 		frame.getContentPane().add(btnCautaCnp);
 		
 		JButton btnCautaZi = new JButton("Cauta dupa zi");
-		btnCautaZi.setBounds(10, 447, 120, 23);
+		btnCautaZi.setBounds(10, 447, 110, 23);
 		frame.getContentPane().add(btnCautaZi);
 		
 		JButton viewConcediiBtn = new JButton("View Concedii");
@@ -457,12 +451,28 @@ public class AlternativaUI {
 				
 			}
 		});
-		viewConcediiBtn.setBounds(275, 416, 117, 29);
+		viewConcediiBtn.setBounds(282, 416, 110, 29);
 		frame.getContentPane().add(viewConcediiBtn);
 		
 		JButton btnInsertConcediu = new JButton("Insert concediu");
 		btnInsertConcediu.setBounds(135, 376, 135, 29);
 		frame.getContentPane().add(btnInsertConcediu);
+		
+		JButton btnCautareConcediuDupaZi = new JButton("Cauta concediu dupa zi");
+		btnCautareConcediuDupaZi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnCautareConcediuDupaZi.setBounds(130, 412, 140, 23);
+		frame.getContentPane().add(btnCautareConcediuDupaZi);
+		
+		JButton btnCautareConcediuDupaNumeAngajat = new JButton("Cauta concediu dupa nume angajat");
+		btnCautareConcediuDupaNumeAngajat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnCautareConcediuDupaNumeAngajat.setBounds(135, 447, 135, 23);
+		frame.getContentPane().add(btnCautareConcediuDupaNumeAngajat);
 
 		btnInsertConcediu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
