@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class AlternativaUI {
 
@@ -76,7 +75,7 @@ public class AlternativaUI {
 	public void Connect() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://localhost/concediidb", "root", "parola");
+			con = DriverManager.getConnection("jdbc:mysql://localhost/concedii", "root", "nero1234");
 		} catch (ClassNotFoundException ex) {
 			
 		} catch (SQLException ex) {
@@ -98,27 +97,42 @@ public class AlternativaUI {
 	
 	//metoda pentru update concediu
 	
-	public void update_concediu_table_load(String data_inceput, String data_sfarsit, int id_concediu) throws ParseException {
+	public void update_concediu_table_load(Date data_inceput, Date data_sfarsit, int id_concediu) throws ParseException {
 		try {
-			//pst = con.prepareStatement("update angajati set nume="+nume+", prenume="+prenume+", id_departament="+id_departament+" where cnp="+cnp);
+
 			pst = con.prepareStatement("update concedii set data_incepere = ?, data_finalizare = ? where id_concediu = ?");
-			//pst.setString(1, cnp);
-			
-			//Date data_incepere = new SimpleDateFormat("YYYY-MM-DD").parse(data_inceput);
-			//Date data_finalizare = new SimpleDateFormat("YYYY-MM-DD").parse(data_sfarsit);
+
 			
 			
 			
 			
 			
-			//pst.setDate(1, (java.sql.Date) data_incepere);
-			//pst.setDate(2, (java.sql.Date) data_finalizare);
+			pst.setDate(1,  data_inceput);
+			pst.setDate(2,  data_sfarsit);
 			pst.setInt(3, id_concediu);
 			pst.executeUpdate();
 			//table.setModel(DbUtils.resultSetToTableModel(rs));
 			concedii_table_load();
 		} catch (SQLException e) {
 			
+			e.printStackTrace();
+		}
+	}
+
+	//metoda de stergere concediu
+
+	public void delete_concediu_table_load(int id_concediu) {
+		try {
+			pst = con.prepareStatement("delete from concedii where id_concediu = ?");
+			pst.setInt(1, id_concediu);
+
+			pst.executeUpdate();
+			//table.setModel(DbUtils.resultSetToTableModel(rs));
+
+
+			concedii_table_load();
+		} catch (SQLException e) {
+
 			e.printStackTrace();
 		}
 	}
@@ -367,46 +381,11 @@ public class AlternativaUI {
 		JButton updateButton = new JButton("Update\r\n");
 		updateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				
-				
-				//aici
-				
-//				String cnp = txtCnp.getText();
-//				String nume_nou = txtNumeAngajat.getText();
-//				String prenume_nou = txtPrenumeAngajat.getText();
-//				int id_dep_nou = Integer.parseInt(txtIdDepartament.getText());
-//				
-//				update_angajat_table_load(nume_nou, prenume_nou, id_dep_nou, cnp);
-				
-//				try {
-//					String cnp = txtCnp.getText();
-//					String nume_nou = txtNumeAngajat.getText();
-//					String prenume_nou = txtPrenumeAngajat.getText();
-//					int id_dep_nou = Integer.parseInt(txtIdDepartament.getText());
-//					
-//					update_angajat_table_load(nume_nou, prenume_nou, id_dep_nou, cnp);
-//				} catch (NullPointerException eroare) {
-//					
-//					String data_incepere = txtDataIncepere.getText();
-//					String data_finalizare = txtDataFinalizare.getText();
-//					int id_concediu = Integer.parseInt(txtIdConcediu.getText());
-//					
-//					try {
-//						update_concediu_table_load(data_incepere, data_finalizare, id_concediu);
-//					} catch (ParseException e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-//					
-//				}
-				
-				String cnp = txtCnp.getText();
-				
-				System.out.println("CNP ESTE "+cnp);
-				
-				if (cnp.equals("")) {
-					String data_incepere = txtDataIncepere.getText();
-					String data_finalizare = txtDataFinalizare.getText();
+				if (txtCnp.getText().equals("")) {
+					Date data_incepere = Date.valueOf(txtDataIncepere.getText());
+					Date data_finalizare = Date.valueOf(txtDataFinalizare.getText());
 					int id_concediu = Integer.parseInt(txtIdConcediu.getText());
 					
 					try {
@@ -420,6 +399,7 @@ public class AlternativaUI {
 					String nume_nou = txtNumeAngajat.getText();
 					String prenume_nou = txtPrenumeAngajat.getText();
 					int id_dep_nou = Integer.parseInt(txtIdDepartament.getText());
+					String cnp = txtCnp.getText();
 					
 					update_angajat_table_load(nume_nou, prenume_nou, id_dep_nou, cnp);
 				}
@@ -431,19 +411,31 @@ public class AlternativaUI {
 		});
 		updateButton.setBounds(479, 602, 110, 28);
 		frame.getContentPane().add(updateButton);
-		
+
 		JButton deleteButton = new JButton("Delete");
 		deleteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				//aici
-				
-				int id_angajat = Integer.parseInt(txtIdAngajat.getText());
-				
-				delete_angajat_table_load(id_angajat);
-				
-				txtIdAngajat.setText("");
-				
+
+				if (txtIdConcediu.getText().equals("")) {
+
+					int id_angajat = Integer.parseInt(txtIdAngajat.getText());
+
+					delete_angajat_table_load(id_angajat);
+
+					txtIdAngajat.setText("");
+				}
+
+				else {
+
+					int id_concediu=Integer.parseInt(txtIdConcediu.getText());
+
+					delete_concediu_table_load(id_concediu);
+
+					txtIdConcediu.setText("");
+				}
+
 			}
 		});
 		deleteButton.setBounds(638, 602, 110, 28);
@@ -471,6 +463,41 @@ public class AlternativaUI {
 		JButton btnInsertConcediu = new JButton("Insert concediu");
 		btnInsertConcediu.setBounds(135, 376, 135, 29);
 		frame.getContentPane().add(btnInsertConcediu);
+
+		btnInsertConcediu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int id_angajat,id_concediu;
+				Date data_incepere,data_finalizare;
+				id_angajat=Integer.parseInt(txtIdAngajatRequest.getText());
+				id_concediu=Integer.parseInt(txtIdConcediu.getText());
+				data_incepere=Date.valueOf(txtDataIncepere.getText());
+				data_finalizare=Date.valueOf(txtDataFinalizare.getText());
+
+				try {
+					pst = con.prepareStatement("INSERT INTO concedii (id_angajat, data_incepere, data_finalizare, id_concediu) values (?, ?, ?, ?)");
+
+					pst.setInt(1,id_angajat);
+					pst.setDate(2,data_incepere);
+					pst.setDate(3,data_finalizare);
+					pst.setInt(4,id_concediu);
+
+					pst.executeUpdate();
+
+					JOptionPane.showMessageDialog(null, "Concediu adaugat");
+					concedii_table_load();
+
+					txtIdAngajatRequest.setText("");
+					txtIdConcediu.setText("");
+					txtDataIncepere.setText("");
+					txtDataFinalizare.setText("");
+				} catch(SQLException e1) {
+					e1.printStackTrace();
+				}
+
+			}
+		});
+
+
 		btnCautaCnp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -479,5 +506,6 @@ public class AlternativaUI {
 				
 			}
 		});
+		
 	}
 }
