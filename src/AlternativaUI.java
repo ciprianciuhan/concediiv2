@@ -23,6 +23,9 @@ import javax.swing.border.EtchedBorder;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AlternativaUI {
 
@@ -37,11 +40,6 @@ public class AlternativaUI {
 	private JTextField txtDataFinalizare;
 	private JTextField txtIdAngajatRequest;
 	private JTable table;
-	private JTextField txtCautareDupaZi;
-	private JTextField txtCautareDupaCNP;
-	private JTextField txtCautareDupaIdAngajat;
-	private JTextField txtCautareDupaDataIncepere;
-	private JTextField txtCautareDupaDataFinalizare;
 
 	/**
 	 * Launch the application.
@@ -86,6 +84,45 @@ public class AlternativaUI {
 		}
 	}
 	
+	//metoda pentru afisarea tabelului de concedii
+	
+	public void concedii_table_load() {
+		try {
+			pst = con.prepareStatement("select * from concedii");
+			rs = pst.executeQuery();
+			table.setModel(DbUtils.resultSetToTableModel(rs));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//metoda pentru update concediu
+	
+	public void update_concediu_table_load(String data_inceput, String data_sfarsit, int id_concediu) throws ParseException {
+		try {
+			//pst = con.prepareStatement("update angajati set nume="+nume+", prenume="+prenume+", id_departament="+id_departament+" where cnp="+cnp);
+			pst = con.prepareStatement("update concedii set data_incepere = ?, data_finalizare = ? where id_concediu = ?");
+			//pst.setString(1, cnp);
+			
+			//Date data_incepere = new SimpleDateFormat("YYYY-MM-DD").parse(data_inceput);
+			//Date data_finalizare = new SimpleDateFormat("YYYY-MM-DD").parse(data_sfarsit);
+			
+			
+			
+			
+			
+			//pst.setDate(1, (java.sql.Date) data_incepere);
+			//pst.setDate(2, (java.sql.Date) data_finalizare);
+			pst.setInt(3, id_concediu);
+			pst.executeUpdate();
+			//table.setModel(DbUtils.resultSetToTableModel(rs));
+			concedii_table_load();
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+	}
+	
 	//aici avem functia cu care afisam tabelul de angajati
 	
 	public void angajat_table_load() {
@@ -97,7 +134,62 @@ public class AlternativaUI {
 			e.printStackTrace();
 		}
 	}
+	
+	//metoda prin care afisam angajatul dupa cnp
+	
+	public void cautare_cnp_table_load(String cnp) {
+		try {
+			pst = con.prepareStatement("select id_angajat, nume, prenume, id_departament from angajati where CNP = "+cnp);
+			//pst.setString(1, cnp);
+			rs = pst.executeQuery();
+			table.setModel(DbUtils.resultSetToTableModel(rs));
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+	}
+	
+	//metoda de update pentru angajati
+	
+	public void update_angajat_table_load(String nume, String prenume, int id_departament, String cnp) {
+		try {
+			//pst = con.prepareStatement("update angajati set nume="+nume+", prenume="+prenume+", id_departament="+id_departament+" where cnp="+cnp);
+			pst = con.prepareStatement("update angajati set nume = ?, prenume = ?, id_departament = ? where cnp = ?");
+			//pst.setString(1, cnp);
+			pst.setString(1, nume);
+			pst.setString(2, prenume);
+			pst.setInt(3, id_departament);
+			pst.setString(4, cnp);
+			pst.executeUpdate();
+			//table.setModel(DbUtils.resultSetToTableModel(rs));
+			cautare_cnp_table_load(cnp);
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+	}
 
+	//metoda de sters angajati
+	
+	public void delete_angajat_table_load(int id_angajat) {
+		try {
+			//pst = con.prepareStatement("update angajati set nume="+nume+", prenume="+prenume+", id_departament="+id_departament+" where cnp="+cnp);
+			pst = con.prepareStatement("delete from angajati where id_angajat = ?");
+			//pst.setString(1, cnp);
+			pst.setInt(1, id_angajat);
+			
+			pst.executeUpdate();
+			//table.setModel(DbUtils.resultSetToTableModel(rs));
+			//cautare_cnp_table_load(cnp);
+			
+			angajat_table_load();
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+	}
+	
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -213,7 +305,7 @@ public class AlternativaUI {
 		txtIdAngajatRequest.setBounds(119, 256, 240, 20);
 		panel.add(txtIdAngajatRequest);
 		
-		JButton saveButton = new JButton("Save");
+		JButton saveButton = new JButton("Insert angajat");
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -253,11 +345,16 @@ public class AlternativaUI {
 		frame.getContentPane().add(saveButton);
 		
 		JButton exitButton = new JButton("Exit");
-		exitButton.setBounds(138, 375, 110, 28);
+		exitButton.setBounds(10, 482, 110, 28);
 		frame.getContentPane().add(exitButton);
 		
-		JButton clearButton = new JButton("Clear\r\n");
-		clearButton.setBounds(268, 375, 110, 28);
+		JButton clearButton = new JButton("View Angajati");
+		clearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				angajat_table_load();
+			}
+		});
+		clearButton.setBounds(282, 376, 110, 28);
 		frame.getContentPane().add(clearButton);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -267,119 +364,120 @@ public class AlternativaUI {
 		table = new JTable();
 		scrollPane.setViewportView(table);
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Cautare angajat", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_1.setBounds(10, 414, 382, 74);
-		frame.getContentPane().add(panel_1);
-		panel_1.setLayout(null);
-		
-		JLabel lblNewLabel_1_1_4_1 = new JLabel("Dupa zi");
-		lblNewLabel_1_1_4_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_1_1_4_1.setBounds(10, 21, 99, 14);
-		panel_1.add(lblNewLabel_1_1_4_1);
-		
-		txtCautareDupaZi = new JTextField();
-		txtCautareDupaZi.setColumns(10);
-		txtCautareDupaZi.setBounds(80, 19, 193, 20);
-		panel_1.add(txtCautareDupaZi);
-		
-		JLabel lblNewLabel_1_1_4_1_1 = new JLabel("Dupa CNP\r\n");
-		lblNewLabel_1_1_4_1_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_1_1_4_1_1.setBounds(10, 46, 99, 14);
-		panel_1.add(lblNewLabel_1_1_4_1_1);
-		
-		txtCautareDupaCNP = new JTextField();
-		txtCautareDupaCNP.setColumns(10);
-		txtCautareDupaCNP.setBounds(80, 44, 193, 20);
-		panel_1.add(txtCautareDupaCNP);
-		
-		JButton btnCautaZi = new JButton("Cauta");
-		btnCautaZi.setBounds(283, 18, 89, 23);
-		panel_1.add(btnCautaZi);
-		
-		JButton btnCautaCnp = new JButton("Cauta");
-		btnCautaCnp.addActionListener(new ActionListener() {
+		JButton updateButton = new JButton("Update\r\n");
+		updateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				try {
-                    String CNP_1 = txtCautareDupaCNP.getText();
-                    
-                    System.out.println(CNP_1);
-                    
-                    pst = con.prepareStatement("select id_angajat, prenume, nume, id_departament, CNP from angajati where CNP = ?");
-                    pst.setString(1, CNP_1);
-                    ResultSet rs = pst.executeQuery();
-                    
-                    
-                    if (rs.next() == true) {
-                        int id_angajat = rs.getInt(1);
-                        String prenume = rs.getString(2);
-                        String nume = rs.getString(3);
-                        int id_departament = rs.getInt(4);
-                        String CNP = rs.getString(5);
-                        
-                       
-                        JOptionPane.showMessageDialog(null, "Angajatul este: " + prenume + nume + " sa ma bata mama");
-                        table.setModel(DbUtils.resultSetToTableModel(rs));
-                        
-                    }
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+				
+				//aici
+				
+//				String cnp = txtCnp.getText();
+//				String nume_nou = txtNumeAngajat.getText();
+//				String prenume_nou = txtPrenumeAngajat.getText();
+//				int id_dep_nou = Integer.parseInt(txtIdDepartament.getText());
+//				
+//				update_angajat_table_load(nume_nou, prenume_nou, id_dep_nou, cnp);
+				
+//				try {
+//					String cnp = txtCnp.getText();
+//					String nume_nou = txtNumeAngajat.getText();
+//					String prenume_nou = txtPrenumeAngajat.getText();
+//					int id_dep_nou = Integer.parseInt(txtIdDepartament.getText());
+//					
+//					update_angajat_table_load(nume_nou, prenume_nou, id_dep_nou, cnp);
+//				} catch (NullPointerException eroare) {
+//					
+//					String data_incepere = txtDataIncepere.getText();
+//					String data_finalizare = txtDataFinalizare.getText();
+//					int id_concediu = Integer.parseInt(txtIdConcediu.getText());
+//					
+//					try {
+//						update_concediu_table_load(data_incepere, data_finalizare, id_concediu);
+//					} catch (ParseException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//					
+//				}
+				
+				String cnp = txtCnp.getText();
+				
+				System.out.println("CNP ESTE "+cnp);
+				
+				if (cnp.equals("")) {
+					String data_incepere = txtDataIncepere.getText();
+					String data_finalizare = txtDataFinalizare.getText();
+					int id_concediu = Integer.parseInt(txtIdConcediu.getText());
+					
+					try {
+						update_concediu_table_load(data_incepere, data_finalizare, id_concediu);
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+				} else {
+					String nume_nou = txtNumeAngajat.getText();
+					String prenume_nou = txtPrenumeAngajat.getText();
+					int id_dep_nou = Integer.parseInt(txtIdDepartament.getText());
+					
+					update_angajat_table_load(nume_nou, prenume_nou, id_dep_nou, cnp);
+				}
+				
+				
 				
 			}
+			
 		});
-		btnCautaCnp.setBounds(283, 43, 89, 23);
-		panel_1.add(btnCautaCnp);
-		
-		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(null, "Cautare concedii", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_2.setBounds(10, 499, 382, 51);
-		frame.getContentPane().add(panel_2);
-		panel_2.setLayout(null);
-		
-		JLabel lblNewLabel_1_1_1_1 = new JLabel("ID Angajat\r\n");
-		lblNewLabel_1_1_1_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_1_1_1_1.setBounds(10, 21, 67, 14);
-		panel_2.add(lblNewLabel_1_1_1_1);
-		
-		txtCautareDupaIdAngajat = new JTextField();
-		txtCautareDupaIdAngajat.setColumns(10);
-		txtCautareDupaIdAngajat.setBounds(117, 19, 240, 20);
-		panel_2.add(txtCautareDupaIdAngajat);
-		
-		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(null, "Cautare dupa perioada", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_3.setBounds(10, 556, 382, 74);
-		frame.getContentPane().add(panel_3);
-		panel_3.setLayout(null);
-		
-		JLabel lblNewLabel_1_1_5_1 = new JLabel("Data incepere");
-		lblNewLabel_1_1_5_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_1_1_5_1.setBounds(10, 22, 99, 14);
-		panel_3.add(lblNewLabel_1_1_5_1);
-		
-		txtCautareDupaDataIncepere = new JTextField();
-		txtCautareDupaDataIncepere.setColumns(10);
-		txtCautareDupaDataIncepere.setBounds(119, 20, 240, 20);
-		panel_3.add(txtCautareDupaDataIncepere);
-		
-		JLabel lblNewLabel_1_1_6_1 = new JLabel("Data finalizare");
-		lblNewLabel_1_1_6_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_1_1_6_1.setBounds(10, 47, 99, 14);
-		panel_3.add(lblNewLabel_1_1_6_1);
-		
-		txtCautareDupaDataFinalizare = new JTextField();
-		txtCautareDupaDataFinalizare.setColumns(10);
-		txtCautareDupaDataFinalizare.setBounds(119, 45, 240, 20);
-		panel_3.add(txtCautareDupaDataFinalizare);
-		
-		JButton updateButton = new JButton("Update\r\n");
 		updateButton.setBounds(479, 602, 110, 28);
 		frame.getContentPane().add(updateButton);
 		
 		JButton deleteButton = new JButton("Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//aici
+				
+				int id_angajat = Integer.parseInt(txtIdAngajat.getText());
+				
+				delete_angajat_table_load(id_angajat);
+				
+				txtIdAngajat.setText("");
+				
+			}
+		});
 		deleteButton.setBounds(638, 602, 110, 28);
 		frame.getContentPane().add(deleteButton);
+		
+		JButton btnCautaCnp = new JButton("Cauta dupa CNP");
+		btnCautaCnp.setBounds(10, 412, 129, 23);
+		frame.getContentPane().add(btnCautaCnp);
+		
+		JButton btnCautaZi = new JButton("Cauta dupa zi");
+		btnCautaZi.setBounds(10, 447, 120, 23);
+		frame.getContentPane().add(btnCautaZi);
+		
+		JButton viewConcediiBtn = new JButton("View Concedii");
+		viewConcediiBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				concedii_table_load();
+				
+			}
+		});
+		viewConcediiBtn.setBounds(275, 416, 117, 29);
+		frame.getContentPane().add(viewConcediiBtn);
+		
+		JButton btnInsertConcediu = new JButton("Insert concediu");
+		btnInsertConcediu.setBounds(135, 376, 135, 29);
+		frame.getContentPane().add(btnInsertConcediu);
+		btnCautaCnp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String CNP_1 = txtCnp.getText();
+				cautare_cnp_table_load(CNP_1);
+				
+			}
+		});
 	}
 }
