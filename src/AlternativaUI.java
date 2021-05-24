@@ -164,9 +164,9 @@ public class AlternativaUI {
 	
 	public void update_angajat_table_load(String nume, String prenume, int id_departament, String cnp) {
 		try {
-			//pst = con.prepareStatement("update angajati set nume="+nume+", prenume="+prenume+", id_departament="+id_departament+" where cnp="+cnp);
+			
 			pst = con.prepareStatement("update angajati set nume = ?, prenume = ?, id_departament = ? where cnp = ?");
-			//pst.setString(1, cnp);
+			
 			pst.setString(1, nume);
 			pst.setString(2, prenume);
 			pst.setInt(3, id_departament);
@@ -366,22 +366,21 @@ public class AlternativaUI {
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				String nume, prenume, CNP;
-				int id_angajat, id_departament;
+				Angajat a = new Angajat();
 				
-				nume = txtNumeAngajat.getText();
-				prenume = txtPrenumeAngajat.getText();
-				id_angajat = Integer.parseInt(txtIdAngajat.getText());
-				id_departament = Integer.parseInt(txtIdDepartament.getText());
-				CNP = txtCnp.getText();
+				a.setNume(txtNumeAngajat.getText());
+				a.setPrenume(txtPrenumeAngajat.getText());
+				a.setId_angajat(Integer.parseInt(txtIdAngajat.getText()));
+				a.setId_departament(Integer.parseInt(txtIdDepartament.getText()));
+				a.setCNP(txtCnp.getText());
 				
 				try {
 					pst = con.prepareStatement("INSERT INTO angajati (id_angajat, prenume, nume, id_departament, CNP) values (?, ?, ?, ?, ?)");
-					pst.setInt(1, id_angajat);
-					pst.setString(2, prenume);
-					pst.setString(3, nume);
-					pst.setInt(4, id_departament);
-					pst.setString(5, CNP);
+					pst.setInt(1, a.getId_angajat());
+					pst.setString(2, a.getPrenume());
+					pst.setString(3, a.getNume());
+					pst.setInt(4, a.getId_departament());
+					pst.setString(5, a.getCNP());
 					pst.executeUpdate();
 					JOptionPane.showMessageDialog(null, "Angajat adaugat");
 					angajat_table_load();
@@ -423,23 +422,38 @@ public class AlternativaUI {
 
 				
 				if (txtCnp.getText().equals("")) {
-					Date data_incepere = Date.valueOf(txtDataIncepere.getText());
-					Date data_finalizare = Date.valueOf(txtDataFinalizare.getText());
-					int id_concediu = Integer.parseInt(txtIdConcediu.getText());
+					
+					Concediu c = new Concediu();
+					
+					c.setData_incepere(Date.valueOf(txtDataIncepere.getText()));
+					c.setData_finalizare(Date.valueOf(txtDataFinalizare.getText()));
+					c.setId_concediu(Integer.parseInt(txtIdConcediu.getText()));
+					
 					
 					try {
-						update_concediu_table_load(data_incepere, data_finalizare, id_concediu);
+						update_concediu_table_load(c.getData_incepere(), c.getData_finalizare(), c.getId_concediu());
+						txtDataIncepere.setText("");
+						txtDataFinalizare.setText("");
+						txtIdConcediu.setText("");
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
 					
 				} else {
-					String nume_nou = txtNumeAngajat.getText();
-					String prenume_nou = txtPrenumeAngajat.getText();
-					int id_dep_nou = Integer.parseInt(txtIdDepartament.getText());
-					String cnp = txtCnp.getText();
 					
-					update_angajat_table_load(nume_nou, prenume_nou, id_dep_nou, cnp);
+					Angajat a = new Angajat();
+					
+					a.setNume(txtNumeAngajat.getText());
+					a.setPrenume(txtPrenumeAngajat.getText());
+					a.setId_departament(Integer.parseInt(txtIdDepartament.getText()));
+					a.setCNP(txtCnp.getText());
+					
+					update_angajat_table_load(a.getNume(), a.getPrenume(), a.getId_departament(), a.getCNP());
+					
+					txtNumeAngajat.setText("");
+					txtPrenumeAngajat.setText("");
+					txtIdDepartament.setText("");
+					txtCnp.setText("");
 				}
 				
 				
@@ -457,19 +471,24 @@ public class AlternativaUI {
 				//aici
 
 				if (txtIdConcediu.getText().equals("")) {
+					
+					Angajat a = new Angajat();
+					
+					a.setId_angajat(Integer.parseInt(txtIdAngajat.getText()));
 
-					int id_angajat = Integer.parseInt(txtIdAngajat.getText());
-
-					delete_angajat_table_load(id_angajat);
+					delete_angajat_table_load(a.getId_angajat());
 
 					txtIdAngajat.setText("");
 				}
 
 				else {
+					
+					Concediu c = new Concediu();
+					
+					c.setId_concediu(Integer.parseInt(txtIdConcediu.getText()));
 
-					int id_concediu=Integer.parseInt(txtIdConcediu.getText());
 
-					delete_concediu_table_load(id_concediu);
+					delete_concediu_table_load(c.getId_concediu());
 
 					txtIdConcediu.setText("");
 				}
@@ -515,10 +534,13 @@ public class AlternativaUI {
 				String zi_inceput = JOptionPane.showInputDialog("Introduceti prima zi din perioada dorita");
 				String zi_sfarsit = JOptionPane.showInputDialog("Introduceti ultima zi din perioada dorita");
 				
-				Date inceput_perioada = Date.valueOf(zi_inceput);
-				Date sfarsit_perioada = Date.valueOf(zi_sfarsit);
+				Concediu c = new Concediu();
 				
-				cautare_angajati_dupa_perioada_table_load(inceput_perioada, sfarsit_perioada);
+				c.setData_incepere(Date.valueOf(zi_inceput));
+				c.setData_finalizare(Date.valueOf(zi_sfarsit));
+				
+				
+				cautare_angajati_dupa_perioada_table_load(c.getData_incepere(), c.getData_finalizare());
 				
 			}
 		});
@@ -527,8 +549,11 @@ public class AlternativaUI {
 				btnCautaCnp.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						
-						String CNP_1 = txtCnp.getText();
-						cautare_cnp_table_load(CNP_1);
+						Angajat a = new Angajat();
+						
+						a.setCNP(txtCnp.getText());
+						
+						cautare_cnp_table_load(a.getCNP());
 						txtCnp.setText("");
 						
 					}
@@ -551,41 +576,45 @@ public class AlternativaUI {
 			public void actionPerformed(ActionEvent e) {
 
 				String id_angajat = JOptionPane.showInputDialog("Introduceti id-ul angajatului");
+				
+				Angajat a = new Angajat();
+				
+				a.setId_angajat(Integer.parseInt(id_angajat));
 
-				int id_angajat2 = Integer.parseInt(id_angajat);
-
-				cautare_concediu_dupa_id_angajat_table_load(id_angajat2);
+				cautare_concediu_dupa_id_angajat_table_load(a.getId_angajat());
 			}
 		});
 		btnCautareConcediuDupaZiSiAngajat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String id_angajat = JOptionPane.showInputDialog("Introduceti id-ul angajatului");
 				String zi_concediu = JOptionPane.showInputDialog("Introduceti ziua de concediu");
+				
+				Concediu c = new Concediu();
+				
+				c.setId_angajat(Integer.parseInt(id_angajat));
+				c.setData_incepere(Date.valueOf(zi_concediu));
 
-				int id_angajat2 = Integer.parseInt(id_angajat);
-				Date zi_concediu2 = Date.valueOf(zi_concediu);
-
-
-				cautare_zi_angajat_table_load(zi_concediu2,id_angajat2);
+				cautare_zi_angajat_table_load(c.getData_incepere(), c.getId_angajat());
 			}
 		});
 
 		btnInsertConcediu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int id_angajat,id_concediu;
-				Date data_incepere,data_finalizare;
-				id_angajat=Integer.parseInt(txtIdAngajatRequest.getText());
-				id_concediu=Integer.parseInt(txtIdConcediu.getText());
-				data_incepere=Date.valueOf(txtDataIncepere.getText());
-				data_finalizare=Date.valueOf(txtDataFinalizare.getText());
+				
+				Concediu c = new Concediu();
+				
+				c.setData_finalizare(Date.valueOf(txtDataFinalizare.getText()));
+				c.setData_incepere(Date.valueOf(txtDataIncepere.getText()));
+				c.setId_angajat(Integer.parseInt(txtIdAngajatRequest.getText()));
+				c.setId_concediu(Integer.parseInt(txtIdConcediu.getText()));
 
 				try {
 					pst = con.prepareStatement("INSERT INTO concedii (id_angajat, data_incepere, data_finalizare, id_concediu) values (?, ?, ?, ?)");
 
-					pst.setInt(1,id_angajat);
-					pst.setDate(2,data_incepere);
-					pst.setDate(3,data_finalizare);
-					pst.setInt(4,id_concediu);
+					pst.setInt(1, c.getId_angajat());
+					pst.setDate(2, c.getData_incepere());
+					pst.setDate(3, c.getData_finalizare());
+					pst.setInt(4, c.getId_concediu());
 
 					pst.executeUpdate();
 
