@@ -77,7 +77,7 @@ public class AlternativaUI {
 	public void Connect() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://localhost/concedii", "root", "nero1234");
+			con = DriverManager.getConnection("jdbc:mysql://localhost/concediidb", "root", "parola");
 		} catch (ClassNotFoundException ex) {
 			
 		} catch (SQLException ex) {
@@ -201,7 +201,7 @@ public class AlternativaUI {
 	}
 
 	//cautarea unui concediu dupa o zi si id-ul unui angajat
-	public void cautare_zi_angajat_table_load(Date zi_concediu,int id_angajat){
+	public void cautare_zi_angajat_table_load(Date zi_concediu, int id_angajat){
 		try{
 			pst = con.prepareStatement("select * from concedii where data_incepere <= ? and data_finalizare >= ? and id_angajat = ?");
 			pst.setDate(1,zi_concediu);
@@ -224,6 +224,22 @@ public class AlternativaUI {
 
 			table.setModel(DbUtils.resultSetToTableModel(rs));
 
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	//metoda pentru afisat lista angajatilor care au concediu intr-o anumita perioada
+	
+	public void cautare_angajati_dupa_perioada_table_load(Date zi_inceput, Date zi_sfarsit){
+		try{
+			//pst = con.prepareStatement("select id_angajat from concedii where data_incepere <= ? and data_finalizare >= ?");
+			pst = con.prepareStatement("select nume, prenume, id_angajat from angajati join concedii using (id_angajat) where data_incepere <= ? and data_finalizare >= ?");
+			pst.setDate(1,zi_inceput);
+			pst.setDate(2,zi_sfarsit);
+			
+			rs = pst.executeQuery();
+			table.setModel(DbUtils.resultSetToTableModel(rs));
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
@@ -382,12 +398,8 @@ public class AlternativaUI {
 				
 			}
 		});
-		saveButton.setBounds(10, 375, 110, 28);
+		saveButton.setBounds(20, 375, 135, 28);
 		frame.getContentPane().add(saveButton);
-		
-		JButton exitButton = new JButton("Exit");
-		exitButton.setBounds(10, 482, 110, 28);
-		frame.getContentPane().add(exitButton);
 		
 		JButton clearButton = new JButton("View Angajati");
 		clearButton.addActionListener(new ActionListener() {
@@ -395,7 +407,7 @@ public class AlternativaUI {
 				angajat_table_load();
 			}
 		});
-		clearButton.setBounds(282, 376, 110, 28);
+		clearButton.setBounds(461, 602, 135, 28);
 		frame.getContentPane().add(clearButton);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -435,7 +447,7 @@ public class AlternativaUI {
 			}
 			
 		});
-		updateButton.setBounds(479, 602, 110, 28);
+		updateButton.setBounds(474, 641, 110, 28);
 		frame.getContentPane().add(updateButton);
 
 		JButton deleteButton = new JButton("Delete");
@@ -464,16 +476,8 @@ public class AlternativaUI {
 
 			}
 		});
-		deleteButton.setBounds(638, 602, 110, 28);
+		deleteButton.setBounds(651, 641, 110, 28);
 		frame.getContentPane().add(deleteButton);
-		
-		JButton btnCautaCnp = new JButton("Cauta dupa CNP");
-		btnCautaCnp.setBounds(10, 412, 110, 23);
-		frame.getContentPane().add(btnCautaCnp);
-		
-		JButton btnCautaZi = new JButton("Cauta dupa zi");
-		btnCautaZi.setBounds(10, 447, 110, 23);
-		frame.getContentPane().add(btnCautaZi);
 		
 		JButton viewConcediiBtn = new JButton("View Concedii");
 		viewConcediiBtn.addActionListener(new ActionListener() {
@@ -483,14 +487,76 @@ public class AlternativaUI {
 				
 			}
 		});
-		viewConcediiBtn.setBounds(282, 416, 110, 29);
+		viewConcediiBtn.setBounds(636, 602, 141, 29);
 		frame.getContentPane().add(viewConcediiBtn);
 		
 		JButton btnInsertConcediu = new JButton("Insert concediu");
-		btnInsertConcediu.setBounds(135, 376, 135, 29);
+		btnInsertConcediu.setBounds(218, 375, 135, 29);
 		frame.getContentPane().add(btnInsertConcediu);
 		
-		JButton btnCautareConcediuDupaZiSiAngajat = new JButton("Cauta concediu dupa zi & angajat");
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Cautare angajati", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_1.setBounds(10, 428, 164, 163);
+		frame.getContentPane().add(panel_1);
+		panel_1.setLayout(null);
+		
+		JButton btnCautaCnp = new JButton("Dupa CNP\r\n");
+		btnCautaCnp.setBounds(10, 44, 135, 23);
+		panel_1.add(btnCautaCnp);
+		
+		JButton btnCautaAngajatiDupaPerioada = new JButton("Dupa perioada");
+		btnCautaAngajatiDupaPerioada.setBounds(10, 93, 135, 23);
+		panel_1.add(btnCautaAngajatiDupaPerioada);
+		btnCautaAngajatiDupaPerioada.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//aici
+				
+				String zi_inceput = JOptionPane.showInputDialog("Introduceti prima zi din perioada dorita");
+				String zi_sfarsit = JOptionPane.showInputDialog("Introduceti ultima zi din perioada dorita");
+				
+				Date inceput_perioada = Date.valueOf(zi_inceput);
+				Date sfarsit_perioada = Date.valueOf(zi_sfarsit);
+				
+				cautare_angajati_dupa_perioada_table_load(inceput_perioada, sfarsit_perioada);
+				
+			}
+		});
+		
+		
+				btnCautaCnp.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						String CNP_1 = txtCnp.getText();
+						cautare_cnp_table_load(CNP_1);
+						txtCnp.setText("");
+						
+					}
+				});
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new TitledBorder(null, "Cautare concedii", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setBounds(184, 428, 209, 163);
+		frame.getContentPane().add(panel_2);
+		panel_2.setLayout(null);
+		
+		JButton btnCautareConcediuDupaZiSiAngajat = new JButton("Dupa zi & angajat\r\n");
+		btnCautareConcediuDupaZiSiAngajat.setBounds(34, 43, 135, 23);
+		panel_2.add(btnCautareConcediuDupaZiSiAngajat);
+		
+		JButton btnCautareConcediuDupaIdAngajat = new JButton("Dupa ID angajat");
+		btnCautareConcediuDupaIdAngajat.setBounds(34, 92, 135, 23);
+		panel_2.add(btnCautareConcediuDupaIdAngajat);
+		btnCautareConcediuDupaIdAngajat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String id_angajat = JOptionPane.showInputDialog("Introduceti id-ul angajatului");
+
+				int id_angajat2 = Integer.parseInt(id_angajat);
+
+				cautare_concediu_dupa_id_angajat_table_load(id_angajat2);
+			}
+		});
 		btnCautareConcediuDupaZiSiAngajat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String id_angajat = JOptionPane.showInputDialog("Introduceti id-ul angajatului");
@@ -503,23 +569,6 @@ public class AlternativaUI {
 				cautare_zi_angajat_table_load(zi_concediu2,id_angajat2);
 			}
 		});
-
-		btnCautareConcediuDupaZiSiAngajat.setBounds(130, 412, 140, 23);
-		frame.getContentPane().add(btnCautareConcediuDupaZiSiAngajat);
-		
-		JButton btnCautareConcediuDupaIdAngajat = new JButton("Cauta concediu dupa ID angajat");
-		btnCautareConcediuDupaIdAngajat.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				String id_angajat = JOptionPane.showInputDialog("Introduceti id-ul angajatului");
-
-				int id_angajat2 = Integer.parseInt(id_angajat);
-
-				cautare_concediu_dupa_id_angajat_table_load(id_angajat2);
-			}
-		});
-		btnCautareConcediuDupaIdAngajat.setBounds(135, 447, 140, 23);
-		frame.getContentPane().add(btnCautareConcediuDupaIdAngajat);
 
 		btnInsertConcediu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -551,16 +600,6 @@ public class AlternativaUI {
 					e1.printStackTrace();
 				}
 
-			}
-		});
-
-
-		btnCautaCnp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				String CNP_1 = txtCnp.getText();
-				cautare_cnp_table_load(CNP_1);
-				
 			}
 		});
 
