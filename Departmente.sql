@@ -26,7 +26,8 @@ data_incepere date not null,
 data_finalizare date not null,
 id_angajat int(3) not null,
 constraint fk_angajat foreign key(id_angajat) references angajati(id_angajat) on delete cascade,
-constraint pk_concediu primary key(id_concediu)
+constraint pk_concediu primary key(id_concediu),
+constraint Data_gresita check (data_incepere<data_finalizare)
 );
 
 insert into departamente values (100,'HR', 510,'Bucuresti');
@@ -65,6 +66,19 @@ insert into angajati values(552,'Reyamsh','Chaudhari',500,'2970331262494');
 insert into angajati values(553,'Kalyani','Kapoor',500,'1890423165219');
 insert into angajati values(554,'Chetan','Bandi',500,'2890406272101');
 
+
+insert into concedii values(200,'2020-05-05','2020-05-08',511);
+insert into concedii values(201,'2020-04-05','2020-04-08',511);
+insert into concedii values(202,'2020-06-07','2020-06-14',522);
+insert into concedii values(203,'2020-01-01','2020-01-18',523);
+insert into concedii values(204,'2020-01-02','2020-01-04',550);
+insert into concedii values(205,'2020-06-07','2020-06-18',550);
+insert into concedii values(206,'2020-11-07','2020-12-18',520);
+insert into concedii values(207,'2020-03-03','2020-04-01',522);
+insert into concedii values(208,'2020-07-07','2020-07-18',554);
+insert into concedii values(209,'2020-08-27','2020-09-05',550);
+insert into concedii values(210,'2020-02-13','2020-02-21',550);
+insert into concedii values(211,'2020-06-08','2020-06-12',551);
 
 select * from departamente;
 select * from angajati;
