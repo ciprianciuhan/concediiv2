@@ -108,9 +108,10 @@ public class AlternativaUI {
 			pst.setInt(3, id_concediu);
 			pst.executeUpdate();
 			//table.setModel(DbUtils.resultSetToTableModel(rs));
+			JOptionPane.showMessageDialog(null, "Concediul a fost actualizat");
 			concedii_table_load();
 		} catch (SQLException e) {
-			
+			JOptionPane.showMessageDialog(null, "Concediul nu a putut fi actualizat");
 			e.printStackTrace();
 		}
 	}
@@ -124,11 +125,13 @@ public class AlternativaUI {
 
 			pst.executeUpdate();
 			//table.setModel(DbUtils.resultSetToTableModel(rs));
+			
+			JOptionPane.showMessageDialog(null, "Concediul a fost sters");
 
 
 			concedii_table_load();
 		} catch (SQLException e) {
-
+			JOptionPane.showMessageDialog(null, "Concediul nu a putut fi sters");
 			e.printStackTrace();
 		}
 	}
@@ -154,7 +157,7 @@ public class AlternativaUI {
 			rs = pst.executeQuery();
 			table.setModel(DbUtils.resultSetToTableModel(rs));
 		} catch (SQLException e) {
-			
+			JOptionPane.showMessageDialog(null, "Angajatul nu a fost gasit");
 			e.printStackTrace();
 		}
 	}
@@ -173,9 +176,10 @@ public class AlternativaUI {
 			pst.setString(4, cnp);
 			pst.executeUpdate();
 			//table.setModel(DbUtils.resultSetToTableModel(rs));
+			JOptionPane.showMessageDialog(null, "Angajat actualizat");
 			cautare_cnp_table_load(cnp);
 		} catch (SQLException e) {
-			
+			JOptionPane.showMessageDialog(null, "Angajatul nu a putut fi actualizat");
 			e.printStackTrace();
 		}
 	}
@@ -193,8 +197,12 @@ public class AlternativaUI {
 			//table.setModel(DbUtils.resultSetToTableModel(rs));
 			//cautare_cnp_table_load(cnp);
 			
+			JOptionPane.showMessageDialog(null, "Angajat sters");
+			
 			angajat_table_load();
 		} catch (SQLException e) {
+			
+			JOptionPane.showMessageDialog(null, "Angajatul nu a putut fi sters");
 			
 			e.printStackTrace();
 		}
@@ -234,7 +242,7 @@ public class AlternativaUI {
 	public void cautare_angajati_dupa_perioada_table_load(Date zi_inceput, Date zi_sfarsit){
 		try{
 			//pst = con.prepareStatement("select id_angajat from concedii where data_incepere <= ? and data_finalizare >= ?");
-			pst = con.prepareStatement("select nume, prenume, id_angajat from angajati join concedii using (id_angajat) where data_incepere <= ? and data_finalizare >= ?");
+			pst = con.prepareStatement("select nume, prenume, id_angajat from angajati join concedii using (id_angajat) where data_incepere >= ? and data_finalizare <= ?");
 			pst.setDate(1,zi_inceput);
 			pst.setDate(2,zi_sfarsit);
 			
@@ -477,6 +485,7 @@ public class AlternativaUI {
 					a.setId_angajat(Integer.parseInt(txtIdAngajat.getText()));
 
 					delete_angajat_table_load(a.getId_angajat());
+					
 
 					txtIdAngajat.setText("");
 				}
@@ -626,6 +635,7 @@ public class AlternativaUI {
 					txtDataIncepere.setText("");
 					txtDataFinalizare.setText("");
 				} catch(SQLException e1) {
+					JOptionPane.showMessageDialog(null, "Nu poti avea data de inceput dupa data de sfarsit");
 					e1.printStackTrace();
 				}
 
